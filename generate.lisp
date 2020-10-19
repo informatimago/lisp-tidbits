@@ -26,19 +26,23 @@
   (load #P"~/quicklisp/setup.lisp")
   (setf (runtime-value "QUICKLISP-CLIENT:*QUICKLOAD-VERBOSE*") t))
 
-(defun configure-asdf-directories (directories &key append)
+(defvar *asdf-append-defaults* nil)
+(defun configure-asdf-directories (directories &key (append *asdf-append-defaults*))
   (if (member :asdf3 *features*)
       (funcall (runtime-function "ASDF:INITIALIZE-SOURCE-REGISTRY")
                `(:source-registry
                  :ignore-inherited-configuration
-                 ,@(mapcar (lambda (dir) `(:directory ,dir))
+                 ,@(mapcar (lambda (dir) `(:tree ,(namestring dir)))
                            (remove-duplicates directories :test (function equalp)))
                  ,@(when append `(:default-registry))))
       (setf (runtime-value "ASDF:*CENTRAL-REGISTRY*")
             (remove-duplicates (if append
                                    (append directories (runtime-value "ASDF:*CENTRAL-REGISTRY*"))
                                    directories)
-                               :test (function equalp)))))
+                               :test (function equalp))))
+  (say "~A = ~S" "asdf::*source-registry-parameter*" (runtime-value "ASDF::*SOURCE-REGISTRY-PARAMETER*"))
+  (SAY "~A = ~S" "asdf:*central-registry*" (runtime-value "ASDF:*CENTRAL-REGISTRY*")))
+(trace configure-asdf-directories)
 
 (defun not-implemented-yet (what)
   (error "~S is not implemented yet on ~A, please provide a patch!"

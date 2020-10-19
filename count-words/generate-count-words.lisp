@@ -11,10 +11,15 @@
 ;;;
 
 (defparameter *source-directory*  (make-pathname :name nil :type nil :version nil
-                                                 :defaults (or *load-pathname* (truename (first (directory #P"./*.lisp"))))))
-(defparameter *asdf-directories*  (mapcar (lambda (path) (make-pathname :name nil :type nil :version nil :defaults path))
-                                          (append (directory (merge-pathnames "**/*.asd" *source-directory* nil))
-                                                  (list *source-directory*))))
+                                                 :defaults (or *load-truename*
+                                                               (truename (first (directory #P"./*.lisp"))))))
+(defparameter *asdf-directories*  (remove-duplicates
+                                   (mapcar (lambda (path) (make-pathname :name nil :type nil :version nil :defaults path))
+                                           (append (directory (merge-pathnames "**/*.asd" *source-directory* nil))
+                                                   (list *source-directory*
+                                                         #P"~/src/public/lisp/")))
+                                   :test (function equalp)))
+(defparameter *asdf-append-defaults* t)
 (defparameter *release-directory* *source-directory* #|#P"HOME:bin;"|# "Where the executable will be stored." )
 
 (generate-program :program-name "count-words"
@@ -28,3 +33,8 @@
                   :asdf-directories  *asdf-directories*
                   :release-directory *release-directory*)
 
+
+;; *asdf-directories*
+;; (#P"/Users/pjb/src/lisp-tidbits/count-words/" #P"/Users/pjb/src/public/lisp/")
+;; (first (directory #P"/Users/pjb/src/public/lisp/**/*.asd"))
+;; #P"/Users/pjb/src/public/com-informatimago/clext/com.informatimago.clext.asd"
