@@ -1,0 +1,12 @@
+;; -*- mode:org;coding:utf-8 -*-
+
+* lisp tidbits
+
+This repository contains small useless lisp programs and tidbits.
+
+* License
+
+All this code is released under the AGPL3 license, as if it was of any use to anybody.
+
+Copyright 2020 Pascal J. Bourguignon <pjb@informatimago.com>
+
